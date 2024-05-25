@@ -1,0 +1,40 @@
+= Overview
+
+Demonstrates how to dynamically register Spring for Apache Pulsar listener containers at runtime.
+
+== Motivation
+https://stackoverflow.com/questions/78530120/creating-listeners-without-springboot-auto-config
+
+== Details
+
+There are 2 REST endpoints:
+
+* `register/{id}` - will dynamically create, start, and register a listener container w/ specified id
+
+* `send/{id}` - will send a random message to the listener w/ the specified id 
+
+=== Steps
+* Start Pulsar
+* `./gradlew build`
+* `./gradlew bootRun`
+
+Once the app is started you can issue the following commands to register 2 listeners and send messages to each:
+[source,bash]
+----
+curl http://localhost:9090/register/1
+curl http://localhost:9090/register/2
+curl http://localhost:9090/send/1
+curl http://localhost:9090/send/2
+----
+
+The output will look something like:
+[source]
+----
+***** REGISTERED CONTAINER w/ id = 1
+***** REGISTERED CONTAINER w/ id = 2
+***** SENT msg-to-container-1-1716604802431
+***** SENT msg-to-container-2-1716604808128
+----
+
+NOTE: Because we registered the containers w/ the application context, and they implement lifecycle methods properly, they will cleanup after themselves properly.
+If you do not want this, you can skip registering them w/ the app context and manage the stop/destroy of the containers yourself.
